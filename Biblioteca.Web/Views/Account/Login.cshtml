@@ -1,0 +1,35 @@
+﻿@model Login
+
+@{
+    Layout = "_LayoutLogin";
+}
+
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 100vh;">
+    <div class="card shadow-lg p-4" style="width: 100%; max-width: 400px; border-radius: 1rem;">
+        <h2 class="text-center mb-4">Accedi</h2>
+
+        <form asp-action="Login" method="post" class="mt-1">
+            <div class="mb-1">
+                <label asp-for="Email" class="form-label"></label>
+                <input asp-for="Email" class="form-control" placeholder="Inserisci la tua email" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+
+            <div class="mb-4 mt-2">
+                <label asp-for="Password" class="form-label"></label>
+                <input asp-for="Password" type="password" class="form-control" placeholder="Inserisci la tua password" />
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100 mt-3">Accedi</button>
+        </form>
+
+        <div class="text-center mt-3">
+            <small class="text-muted">Non hai un account? <a href="/Register">Registrati</a></small>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}
