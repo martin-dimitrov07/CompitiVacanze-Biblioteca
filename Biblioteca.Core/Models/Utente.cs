@@ -8,7 +8,7 @@ namespace Biblioteca.Core.Models
 {
     public class Utente
     {
-        public int Id { get; set; }
+        public int IdUtente { get; set; }
 
         public DateTime DataNascita { get; set; }
 

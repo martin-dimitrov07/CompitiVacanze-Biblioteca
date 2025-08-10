@@ -8,7 +8,7 @@ namespace Biblioteca.Core.Models
 {
     public class Lingua
     {
-        public int Id { get; set; }
+        public int IdLingua { get; set; }
 
         public string Nome { get; set; }
 

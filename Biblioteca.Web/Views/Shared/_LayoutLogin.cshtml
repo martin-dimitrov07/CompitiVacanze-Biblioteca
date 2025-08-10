@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Biblioteca - @ViewData["Title"]</title>
+    <title>Biblioteca - @ViewBag.Title</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
 
     @await RenderSectionAsync("Styles", required: false) @* Migliora il rendering della pagina con await e Async *@
@@ -16,6 +16,8 @@
     </div>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     @* <script src="~/js/site.js" asp-append-version="true"></script> asp-append-version fa versioning codice (aggiornare versione del file nella cache) *@
 

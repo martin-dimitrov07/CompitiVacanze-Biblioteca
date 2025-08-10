@@ -8,7 +8,7 @@ namespace Biblioteca.Core.Models
 {
     public class Prenotazione
     {
-        public int Id { get; set; }
+        public int IdPrenotazione { get; set; }
 
         public int IdLibro { get; set; }
         public Libro Libro { get; set; }

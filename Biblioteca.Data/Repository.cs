@@ -16,17 +16,28 @@ namespace Biblioteca.Data
             _db = new Database(connStr);
         }
 
-        public object? GetElements(string nameTable, string strWhere, SqlParameter[]? parameters = null)
+        public List<T> GetElements<T>(string nameTable, string strWhere, SqlParameter[]? parameters = null) // T è un tipo generico che deve essere specificato al momento della chiamata del metodo
+            where T : new()   // <-- indica che T ha un costruttore senza parametri
         {
             string query = $"SELECT * FROM {nameTable} WHERE {strWhere}";
 
             var reader = _db.ExecuteReader(query, parameters);
 
-            var elements = new List<object>();
+            var elements = new List<T>();
 
             while (reader.Read())
             {
-                elements.Add(reader[0]);
+                T item = new T();
+
+                foreach(var prop in typeof(T).GetProperties())
+                {
+                    if (reader.GetSchemaTable().Columns.Contains(prop.Name) && reader[prop.Name] != DBNull.Value)
+                    {
+                        prop.SetValue(item, reader[prop.Name]);
+                    }
+                }
+
+                elements.Add(item);
             }
 
             if(elements.Count == 0)
