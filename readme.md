@@ -6,4 +6,4 @@
 
 <br>
 
-<strong>Gestionale di una libreria
+<strong>Gestionale di una Biblioteca
