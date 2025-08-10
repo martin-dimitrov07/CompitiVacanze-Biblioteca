@@ -1,4 +1,5 @@
-﻿using Microsoft.Data.SqlClient;
+﻿using Biblioteca.Core.Models;
+using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,37 +17,63 @@ namespace Biblioteca.Data
             _db = new Database(connStr);
         }
 
-        public List<T> GetElements<T>(string nameTable, string strWhere, SqlParameter[]? parameters = null) // T è un tipo generico che deve essere specificato al momento della chiamata del metodo
-            where T : new()   // <-- indica che T ha un costruttore senza parametri
+        public List<Utente> GetUtenti(string strWhere, SqlParameter[]? parameters = null)
         {
-            string query = $"SELECT * FROM {nameTable} WHERE {strWhere}";
-
+            string query = $"SELECT * FROM Utenti WHERE {strWhere}";
             var reader = _db.ExecuteReader(query, parameters);
-
-            var elements = new List<T>();
+            var utenti = new List<Utente>();
 
             while (reader.Read())
             {
-                T item = new T();
-
-                foreach(var prop in typeof(T).GetProperties())
+                utenti.Add(new Utente
                 {
-                    if (reader.GetSchemaTable().Columns.Contains(prop.Name) && reader[prop.Name] != DBNull.Value)
-                    {
-                        prop.SetValue(item, reader[prop.Name]);
-                    }
-                }
-
-                elements.Add(item);
+                    IdUtente = reader.GetInt32(0),
+                    Nome = reader.GetString(2),
+                    Cognome = reader.GetString(3),
+                    Email = reader.GetString(4),
+                    PasswordHash = reader.GetString(5)
+                });
             }
 
-            if(elements.Count == 0)
+            if (utenti.Count == 0)
             {
                 return null;
             }
-
-            return elements;
+            return utenti;
         }
+
+        // NON FUNZIONA
+        //public List<T> GetElements<T>(string nameTable, string strWhere, SqlParameter[]? parameters = null) // T è un tipo generico che deve essere specificato al momento della chiamata del metodo
+        //    where T : new()   // <-- indica che T ha un costruttore senza parametri
+        //{
+        //    string query = $"SELECT * FROM {nameTable} WHERE {strWhere}";
+
+        //    var reader = _db.ExecuteReader(query, parameters);
+
+        //    var elements = new List<T>();
+
+        //    while (reader.Read())
+        //    {
+        //        T item = new T();
+
+        //        foreach(var prop in typeof(T).GetProperties())
+        //        {
+        //            if (reader.GetSchemaTable().Columns.Contains(prop.Name) && reader[prop.Name] != DBNull.Value)
+        //            {
+        //                prop.SetValue(item, reader[prop.Name]);
+        //            }
+        //        }
+
+        //        elements.Add(item);
+        //    }
+
+        //    if(elements.Count == 0)
+        //    {
+        //        return null;
+        //    }
+
+        //    return elements;
+        //}
 
         public int InsertElement(string nameTable, object element, SqlParameter[]? parameters = null)
         {

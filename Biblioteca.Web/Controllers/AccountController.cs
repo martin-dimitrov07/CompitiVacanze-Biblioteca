@@ -1,7 +1,9 @@
 ﻿using Biblioteca.Core.Models;
 using Biblioteca.Data;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
+using System.Security.Claims;
 
 namespace Biblioteca.Web.Controllers
 {
@@ -22,13 +24,13 @@ namespace Biblioteca.Web.Controllers
         }
 
         [HttpPost]
-        public IActionResult Login(Login model)
+        public async Task<IActionResult> LoginAsync(Login model)
         {
             if (ModelState.IsValid)
             {
                 string passwordHash = BCrypt.Net.BCrypt.HashPassword(model.Password);
 
-                List<Utente>? users = _repo.GetElements<Utente>("Utenti", $"Email = '{model.Email}'",
+                List<Utente>? users = _repo.GetUtenti($"Email = '{model.Email}'",
                     new SqlParameter[] {
                         new SqlParameter("@Email", model.Email),
                         new SqlParameter("@PasswordHash", passwordHash) 
@@ -40,11 +42,30 @@ namespace Biblioteca.Web.Controllers
                     {
                         if (BCrypt.Net.BCrypt.Verify(model.Password, user.PasswordHash))
                         {
-                            // Login successful
-                            // Here you can set session variables or cookies as needed
-                            // For example: HttpContext.Session.SetString("UserEmail", user.Email);
-                            //return RedirectToAction("Index", "Home");
                             Console.WriteLine("Login effettuato con successo.");
+
+                            // Crea i claims per l'utente autenticato per il cookie di autenticazione per il login
+                            var claims = new List<Claim>
+                            {
+                                new Claim(ClaimTypes.Name, user.Email),
+                                // puoi aggiungere anche: new Claim(ClaimTypes.Role, user.Ruolo)
+                            };
+
+                            var identity = new ClaimsIdentity(claims, "MyCookieAuth");
+                            var principal = new ClaimsPrincipal(identity);
+
+                            await HttpContext.SignInAsync("MyCookieAuth", principal); // crea il cookie
+
+                            if(user.Email == "admin@admin.com" && BCrypt.Net.BCrypt.Verify("Admin", user.PasswordHash))
+                            {
+                                Console.WriteLine("Accesso come Admin.");
+                                return RedirectToAction("IndexAdmin", "Home");
+                            }
+                            else
+                            {
+                                Console.WriteLine("Accesso come Utente.");
+                                return RedirectToAction("IndexCliente", "Home");
+                            }
                         }
                     }
                 }
@@ -53,6 +74,12 @@ namespace Biblioteca.Web.Controllers
             }
 
             return View(model);
+        }
+
+        public async Task<IActionResult> Logout()
+        {
+            await HttpContext.SignOutAsync("MyCookieAuth"); // cancella il cookie
+            return RedirectToAction("Login", "Account");
         }
     }
 }

@@ -1,8 +1,9 @@
-﻿@{
-    ViewData["Title"] = "Home page";
+﻿@section Styles {
+    <link rel="stylesheet" href="~/css/index.css" />
 }
 
-<div class="text-center">
-    <h1 class="display-4">@ViewData["Title"]/h1>
-     <p>Index Page</p>
+<div class="hero">
+    <div class="hero-content">
+        <h1>@ViewBag.Message</h1>
+    </div>
 </div>

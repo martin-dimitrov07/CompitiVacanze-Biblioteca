@@ -10,7 +10,7 @@ namespace Biblioteca.Core.Models
     {
         public int IdUtente { get; set; }
 
-        public DateTime DataNascita { get; set; }
+        public DateTime? DataNascita { get; set; }
 
         public string Nome { get; set; }
 
