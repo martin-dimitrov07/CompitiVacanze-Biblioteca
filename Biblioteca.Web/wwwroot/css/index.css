@@ -1,7 +1,7 @@
 /* Altezza e centratura verticale/orizzontale */
 .hero {
     position: relative;
-    height: 100vh; /* altezza schermo */
+    height: 84.5vh;
     background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
     display: flex;
     align-items: center;

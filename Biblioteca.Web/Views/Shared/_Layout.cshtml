@@ -26,12 +26,23 @@
 
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav ms-auto">
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="Utente" asp-action="Index">Utenti</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="Libro" asp-action="Index">Libri</a>
-                        </li>
+                        @{
+                            if(ViewBag.Utente == "Admin")
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="Utente" asp-action="Index">Utenti</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="Libro" asp-action="Index">Libri</a>
+                                </li>
+                            }
+                            else if(ViewBag.Utente == "Cliente")
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="LibroPrenotato" asp-action="Index">Libri Prenotati</a>
+                                </li>
+                            }
+                        }
                         <li class="nav-item">
                             <a class="nav-link" asp-controller="Account" asp-action="Logout">Logout</a>
                         </li>
