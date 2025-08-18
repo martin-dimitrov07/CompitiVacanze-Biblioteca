@@ -154,7 +154,7 @@ namespace Biblioteca.Data
             string query = "";
 
             if (strWhere == "")
-                query = $"SELECT * FROM Linque";
+                query = $"SELECT * FROM Lingue";
             else
                 query = $"SELECT * FROM Lingue WHERE {strWhere}";
 
@@ -216,11 +216,19 @@ namespace Biblioteca.Data
 
             foreach (var prop in element.GetType().GetProperties())
             {
-                fields += $"{prop.Name}, ";
-                if (prop.GetValue(element) is string)
-                    values += $"'{prop.GetValue(element)}', ";
-                else
-                    values += $"{prop.GetValue(element)}, ";
+                // Salta le colonne autoincremento/identity
+                var isIdentity = Attribute.IsDefined(prop, typeof(System.ComponentModel.DataAnnotations.KeyAttribute));
+                if (isIdentity)
+                    continue;
+
+                if (prop.GetValue(element) != null)
+                {
+                    fields += $"{prop.Name}, ";
+                    if (prop.GetValue(element) is string)
+                        values += $"'{prop.GetValue(element)}', ";
+                    else
+                        values += $"{prop.GetValue(element)}, ";
+                }
             }
 
             string query = $"INSERT INTO {nameTable} ({fields.TrimEnd(',', ' ')}) VALUES ({values.TrimEnd(',', ' ')})";

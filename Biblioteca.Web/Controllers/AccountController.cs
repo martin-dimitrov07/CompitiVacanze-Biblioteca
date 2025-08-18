@@ -20,11 +20,11 @@ namespace Biblioteca.Web.Controllers
         public IActionResult Login()
         {
             ViewBag.Title = "Login";
-            return View(new Biblioteca.Core.Models.Login());
+            return View(new Login());
         }
 
         [HttpPost]
-        public async Task<IActionResult> LoginAsync(Login model)
+        public async Task<IActionResult> Login(Login model)
         {
             if (ModelState.IsValid)
             {
@@ -67,9 +67,13 @@ namespace Biblioteca.Web.Controllers
                                 return RedirectToAction("IndexCliente", "Home");
                             }
                         }
+                        else
+                            ModelState.AddModelError(string.Empty, "Email o Password incorretti");
                     }
                 }
-                
+                else
+                    ModelState.AddModelError(string.Empty, "Email o Password incorretti");
+
                 Console.WriteLine("Email o password non corretti.");
             }
 

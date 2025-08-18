@@ -13,5 +13,13 @@ namespace Biblioteca.Core.Models
         public string Nome { get; set; }
 
         public string Cognome { get; set; }
+
+        public string Nominativo
+        {
+            get
+            {
+                return $"{Nome} {Cognome}";
+            }
+        }
     }
 }
