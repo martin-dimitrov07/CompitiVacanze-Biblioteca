@@ -77,6 +77,7 @@ namespace Biblioteca.Web.Controllers
                 Console.WriteLine("Email o password non corretti.");
             }
 
+            ViewBag.Title = "Login";
             return View(model);
         }
 

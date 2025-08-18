@@ -62,5 +62,47 @@ namespace Biblioteca.Web.Controllers
             ViewBag.Lingue = new SelectList(_repo.GetLingue(""), "IdLingua", "Nome");
             return View(libro);
         }
+
+        public IActionResult Edit(int id)
+        {
+            ViewBag.Title = "Modifica Libro";
+            ViewBag.Utente = "Admin";
+            List<Libro>? libro = _repo.GetLibri($"IdLibro={id}");
+
+            ViewBag.Autori = new SelectList(_repo.GetAutori(""), "IdAutore", "Nominativo", libro[0].IdAutore);
+            ViewBag.Paesi = new SelectList(_repo.GetNazioni(""), "IdPaese", "Nome", libro[0].IdPaese);
+            ViewBag.Lingue = new SelectList(_repo.GetLingue(""), "IdLingua", "Nome", libro[0].IdLingua);
+            return View(libro[0]);
+        }
+
+        [HttpPost]
+        public IActionResult Edit(Libro libro)
+        {
+            if (ModelState.IsValid)
+            {
+                _repo.UpdateElement("Libri", libro, $"IdLibro={libro.IdLibro}", new SqlParameter[] {
+                    new SqlParameter("@Titolo", libro.Titolo),
+                });
+                ViewBag.Utente = "Admin";
+                return RedirectToAction("Index");
+            }
+
+            ViewBag.Title = "Modifica Libro";
+            ViewBag.Utente = "Admin";
+            ViewBag.Autori = new SelectList(_repo.GetAutori(""), "IdAutore", "Nominativo", libro.IdAutore);
+            ViewBag.Paesi = new SelectList(_repo.GetNazioni(""), "IdPaese", "Nome", libro.IdPaese);
+            ViewBag.Lingue = new SelectList(_repo.GetLingue(""), "IdLingua", "Nome", libro.IdLingua);
+            return View(libro);
+        }
+
+        [HttpPost]
+        public IActionResult Delete(int id)
+        {
+            _repo.DeleteElement("Libri", $"IdLibro={id}", new SqlParameter[] {
+                new SqlParameter("@IdLibro", id)
+            });
+            ViewBag.Utente = "Admin";
+            return RedirectToAction("Index");
+        }
     }
 }

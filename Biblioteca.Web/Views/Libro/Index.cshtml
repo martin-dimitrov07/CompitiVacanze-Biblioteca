@@ -1,5 +1,9 @@
 ﻿@model List<Libro>
 
+@section Scripts {
+    <script src="~/js/Edit-Book.js"></script>
+}
+
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h1 class="mb-0">Libri</h1>
@@ -23,6 +27,7 @@
                     <th>Lingua</th>
                     <th>Prezzo (€)</th>
                     <th>Pagine</th>
+                    <th>Azioni</th>
                 </tr>
             </thead>
             <tbody>
@@ -37,9 +42,35 @@
                         <td>@libro.Lingua.Nome</td>
                         <td>@libro.Prezzo.ToString("F2")</td>
                         <td>@libro.Pagine.ToString()</td>
+                        <td>
+                            <a class="mx-1 text-dark" asp-controller="Libro" asp-action="Edit" asp-route-id="@libro.IdLibro"><i class="bi bi-pencil-square"></i></a>
+                            <a class="mx-1 text-dark" id="btnDelete" data-bs-toggle="modal" data-bs-target="#deleteModal" data-id="@libro.IdLibro">
+                                <i class="bi bi-trash"></i>
+                            </a>
+                        </td>
                     </tr>
                 }
             </tbody>
         </table>
     }
+</div>
+
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Conferma eliminazione</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                Sei sicuro di voler eliminare questo libro?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
+                <form id="deleteForm" method="post">
+                    <button type="submit" class="btn btn-danger">Elimina</button>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>

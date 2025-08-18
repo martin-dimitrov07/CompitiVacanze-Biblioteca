@@ -241,10 +241,23 @@ namespace Biblioteca.Data
             string setClause = "";
             foreach (var prop in element.GetType().GetProperties())
             {
-                if (prop.GetValue(element) is string)
-                    setClause += $"{prop.Name} = '{prop.GetValue(element)}', ";
-                else
-                    setClause += $"{prop.Name} = {prop.GetValue(element)}, ";
+                // Salta le colonne autoincremento/identity
+                var isIdentity = Attribute.IsDefined(prop, typeof(System.ComponentModel.DataAnnotations.KeyAttribute));
+                if (isIdentity)
+                    continue;
+
+                if (prop.GetValue(element) != null)
+                {
+                    if (prop.GetValue(element) is string)
+                        setClause += $"{prop.Name} = '{prop.GetValue(element)}', ";
+                    else
+                    {
+                        if (prop.GetValue(element) is decimal)
+                            setClause += $"{prop.Name} = {prop.GetValue(element).ToString().Replace(',', '.')}, ";
+                        else
+                            setClause += $"{prop.Name} = {prop.GetValue(element)}, ";
+                    }
+                }
             }
             string query = $"UPDATE {nameTable} SET {setClause.TrimEnd(',', ' ')} WHERE {strWhere}";
             return _db.ExecuteNonQuery(query, parameters);
