@@ -1,0 +1,51 @@
+﻿@model Utente
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1 class="mb-0">@ViewBag.Title</h1>
+        <a class="btn btn-outline-dark" asp-controller="Utenti" asp-action="Index">Torna agli Utenti</a>
+    </div>
+
+    <form asp-action="Edit" asp-controller="Utente" method="post" class="border rounded my-3 p-4 shadow-sm bg-light">
+        <div class="mb-3">
+            <label asp-for="Nome" class="form-label"></label>
+            <input asp-for="Nome" class="form-control" />
+            <span asp-validation-for="Nome" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Cognome" class="form-label"></label>
+            <input asp-for="Cognome" class="form-control" />
+            <span asp-validation-for="Cognome" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Email" class="form-label"></label>
+            <input type="email" asp-for="Email" class="form-control" />
+            <span asp-validation-for="Email" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="DataNascita" class="form-label">Data di Nascita</label>
+            <input type="date" asp-for="DataNascita" class="form-control" min="1753-01-01" max="@DateTime.Now.ToString("yyyy-MM-dd")" />
+            <span asp-validation-for="DataNascita" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="PasswordHash" class="form-label">Password (opzionale)</label>
+            <input type="password" asp-for="PasswordHash" class="form-control" value="nocambiata"/>
+            <span asp-validation-for="PasswordHash" class="text-danger"></span>
+        </div>
+
+        <input type="hidden" asp-for="IdUtente" />
+
+        <button type="submit" class="btn btn-dark">Salva</button>
+        <a class="btn btn-outline-secondary ms-2" asp-controller="Utente" asp-action="Index">Annulla</a>
+    </form>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

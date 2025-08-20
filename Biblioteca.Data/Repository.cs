@@ -39,6 +39,11 @@ namespace Biblioteca.Data
                     Email = reader.GetString(4),
                     PasswordHash = reader.GetString(5)
                 });
+
+                if(!reader.IsDBNull(1))
+                {
+                    utenti.Last().DataNascita = reader.GetDateTime(1);
+                }
             }
 
             if (utenti.Count == 0)
@@ -209,59 +214,67 @@ namespace Biblioteca.Data
         //    return elements;
         //}
 
-        public int InsertElement(string nameTable, object element, SqlParameter[]? parameters = null)
+        public int InsertElement(string nameTable, object element)
         {
-            string fields = "";
-            string values = "";
+            var fields = new List<string>();
+            var paramNames = new List<string>();
+            var sqlParams = new List<SqlParameter>();
 
             foreach (var prop in element.GetType().GetProperties())
             {
-                // Salta le colonne autoincremento/identity
+                // Salta le colonne [Key] (es. ID autoincrementale)
                 var isIdentity = Attribute.IsDefined(prop, typeof(System.ComponentModel.DataAnnotations.KeyAttribute));
                 if (isIdentity)
                     continue;
 
-                if (prop.GetValue(element) != null)
+                var value = prop.GetValue(element);
+                if (value != null)
                 {
-                    fields += $"{prop.Name}, ";
-                    if (prop.GetValue(element) is string)
-                        values += $"'{prop.GetValue(element)}', ";
-                    else
-                        values += $"{prop.GetValue(element)}, ";
+                    string field = prop.Name;
+                    string paramName = $"@{field}";
+
+                    fields.Add(field);
+                    paramNames.Add(paramName);
+                    sqlParams.Add(new SqlParameter(paramName, value));
                 }
             }
 
-            string query = $"INSERT INTO {nameTable} ({fields.TrimEnd(',', ' ')}) VALUES ({values.TrimEnd(',', ' ')})";
+            string query = $"INSERT INTO {nameTable} ({string.Join(", ", fields)}) VALUES ({string.Join(", ", paramNames)})";
 
-            return _db.ExecuteNonQuery(query, parameters);
+            return _db.ExecuteNonQuery(query, sqlParams.ToArray());
         }
+
 
         public int UpdateElement(string nameTable, object element, string strWhere, SqlParameter[]? parameters = null)
         {
-            string setClause = "";
+            var setClauses = new List<string>();
+            var sqlParams = new List<SqlParameter>();
+
             foreach (var prop in element.GetType().GetProperties())
             {
-                // Salta le colonne autoincremento/identity
                 var isIdentity = Attribute.IsDefined(prop, typeof(System.ComponentModel.DataAnnotations.KeyAttribute));
                 if (isIdentity)
                     continue;
 
-                if (prop.GetValue(element) != null)
+                var value = prop.GetValue(element);
+                if (value != null)
                 {
-                    if (prop.GetValue(element) is string)
-                        setClause += $"{prop.Name} = '{prop.GetValue(element)}', ";
-                    else
-                    {
-                        if (prop.GetValue(element) is decimal)
-                            setClause += $"{prop.Name} = {prop.GetValue(element).ToString().Replace(',', '.')}, ";
-                        else
-                            setClause += $"{prop.Name} = {prop.GetValue(element)}, ";
-                    }
+                    string paramName = $"@{prop.Name}";
+                    setClauses.Add($"{prop.Name} = {paramName}");
+                    sqlParams.Add(new SqlParameter(paramName, value));
                 }
             }
-            string query = $"UPDATE {nameTable} SET {setClause.TrimEnd(',', ' ')} WHERE {strWhere}";
-            return _db.ExecuteNonQuery(query, parameters);
+
+            if (parameters != null)
+            {
+                sqlParams.AddRange(parameters);
+            }
+
+            string query = $"UPDATE {nameTable} SET {string.Join(", ", setClauses)} WHERE {strWhere}";
+
+            return _db.ExecuteNonQuery(query, sqlParams.ToArray());
         }
+
 
         public int DeleteElement(string nameTable, string strWhere, SqlParameter[]? parameters = null)
         {

@@ -47,9 +47,7 @@ namespace Biblioteca.Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                _repo.InsertElement("Libri", libro, new SqlParameter[] {
-                    new SqlParameter("@Titolo", libro.Titolo)
-                });
+                _repo.InsertElement("Libri", libro);
 
                 ViewBag.Utente = "Admin";
                 return RedirectToAction("Index");
@@ -67,7 +65,7 @@ namespace Biblioteca.Web.Controllers
         {
             ViewBag.Title = "Modifica Libro";
             ViewBag.Utente = "Admin";
-            List<Libro>? libro = _repo.GetLibri($"IdLibro={id}");
+            List<Libro>? libro = _repo.GetLibri($"IdLibro=@IdLibro", new SqlParameter[] { new SqlParameter("@IdLibro", id) });
 
             ViewBag.Autori = new SelectList(_repo.GetAutori(""), "IdAutore", "Nominativo", libro[0].IdAutore);
             ViewBag.Paesi = new SelectList(_repo.GetNazioni(""), "IdPaese", "Nome", libro[0].IdPaese);
@@ -80,9 +78,7 @@ namespace Biblioteca.Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                _repo.UpdateElement("Libri", libro, $"IdLibro={libro.IdLibro}", new SqlParameter[] {
-                    new SqlParameter("@Titolo", libro.Titolo),
-                });
+                _repo.UpdateElement("Libri", libro, $"IdLibro=@IdLibro", [new SqlParameter("@IdLibro", libro.IdLibro)]);
                 ViewBag.Utente = "Admin";
                 return RedirectToAction("Index");
             }
@@ -98,7 +94,7 @@ namespace Biblioteca.Web.Controllers
         [HttpPost]
         public IActionResult Delete(int id)
         {
-            _repo.DeleteElement("Libri", $"IdLibro={id}", new SqlParameter[] {
+            _repo.DeleteElement("Libri", $"IdLibro=@IdLibro", new SqlParameter[] {
                 new SqlParameter("@IdLibro", id)
             });
             ViewBag.Utente = "Admin";

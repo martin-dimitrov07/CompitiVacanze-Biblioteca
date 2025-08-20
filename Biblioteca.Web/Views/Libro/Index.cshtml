@@ -1,7 +1,7 @@
 ﻿@model List<Libro>
 
 @section Scripts {
-    <script src="~/js/Edit-Book.js"></script>
+    <script src="~/js/Delete-Book.js"></script>
 }
 
 <div class="container mt-4">
@@ -44,7 +44,7 @@
                         <td>@libro.Pagine.ToString()</td>
                         <td>
                             <a class="mx-1 text-dark" asp-controller="Libro" asp-action="Edit" asp-route-id="@libro.IdLibro"><i class="bi bi-pencil-square"></i></a>
-                            <a class="mx-1 text-dark" id="btnDelete" data-bs-toggle="modal" data-bs-target="#deleteModal" data-id="@libro.IdLibro">
+                            <a class="mx-1 text-dark" id="btnDelete" data-bs-toggle="modal" data-bs-target="#deleteModal" data-id="@libro.IdLibro" style="cursor: pointer">
                                 <i class="bi bi-trash"></i>
                             </a>
                         </td>
