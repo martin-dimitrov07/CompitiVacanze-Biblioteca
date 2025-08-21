@@ -15,11 +15,12 @@ namespace Biblioteca.Web.Controllers
         }
 
         [Authorize]
-        public IActionResult IndexCliente()
+        public IActionResult IndexCliente(int idCliente)
         {
             ViewBag.Title = "Home Page";
             ViewBag.Message = "Benvenuto nella Biblioteca Digitale!";
             ViewBag.Utente = "Cliente";
+            ViewBag.IdCliente = idCliente;
             return View("Index");
         }
     }

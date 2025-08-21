@@ -180,6 +180,34 @@ namespace Biblioteca.Data
             return lingue;
         }
 
+        public List<Prenotazione>? GetPrenotazioni(string strWhere, SqlParameter[]? parameters = null)
+        {
+            string query = "";
+
+            if (strWhere == "")
+                query = $"SELECT * FROM Prenotazioni";
+            else
+                query = $"SELECT * FROM Prenotazioni WHERE {strWhere}";
+
+            var reader = _db.ExecuteReader(query, parameters);
+            var prenotazioni = new List<Prenotazione>();
+
+            while (reader.Read())
+            {
+                prenotazioni.Add(new Prenotazione
+                {
+                    IdPrenotazione = reader.GetInt32(0),
+                    IdUtente = reader.GetInt32(1),
+                    IdLibro = reader.GetInt32(2),
+                });
+            }
+
+            if (prenotazioni.Count == 0)
+            {
+                return null;
+            }
+            return prenotazioni;
+        }
 
         // NON FUNZIONA
         //public List<T> GetElements<T>(string nameTable, string strWhere, SqlParameter[]? parameters = null) // T è un tipo generico che deve essere specificato al momento della chiamata del metodo

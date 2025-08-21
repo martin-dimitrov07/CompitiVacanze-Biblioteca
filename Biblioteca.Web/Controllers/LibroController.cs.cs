@@ -20,16 +20,18 @@ namespace Biblioteca.Web.Controllers
         }
 
         [Authorize]
-        public IActionResult Index()
+        [HttpGet]
+        public IActionResult IndexAdmin()
         {
             ViewBag.Title = "Libri";
             ViewBag.Utente = "Admin";
-
+            
             List<Libro>? libri = _repo.GetLibri("");
 
-            return View(libri);
+            return View("Index", libri);
         }
 
+        [Authorize]
         public IActionResult Create()
         {
             ViewBag.Title = "Aggiungi Libro";
@@ -61,6 +63,7 @@ namespace Biblioteca.Web.Controllers
             return View(libro);
         }
 
+        [Authorize]
         public IActionResult Edit(int id)
         {
             ViewBag.Title = "Modifica Libro";
@@ -99,6 +102,26 @@ namespace Biblioteca.Web.Controllers
             });
             ViewBag.Utente = "Admin";
             return RedirectToAction("Index");
+        }
+
+        [Authorize]
+        [HttpGet]
+        public IActionResult IndexCliente(int idCliente)
+        {
+            ViewBag.Title = "Prenota Libro";
+            ViewBag.Utente = "Cliente";
+
+            List<Libro>? libri = new List<Libro>();
+
+            List<Prenotazione> prenotazioni = _repo.GetPrenotazioni($"IdUtente=@IdUtente", new SqlParameter[] { new SqlParameter("@IdUtente", idCliente) });
+
+            foreach(var prenotazione in prenotazioni)
+            {
+                libri.AddRange(_repo.GetLibri($"IdLibro=@IdLibro", new SqlParameter[] { new SqlParameter("@IdLibro", prenotazione.IdLibro) }));
+            }
+            
+            ViewBag.IdCliente = idCliente;
+            return View("Index", libri);
         }
     }
 }

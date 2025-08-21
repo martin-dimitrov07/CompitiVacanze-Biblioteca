@@ -64,7 +64,7 @@ namespace Biblioteca.Web.Controllers
                             else
                             {
                                 Console.WriteLine("Accesso come Utente.");
-                                return RedirectToAction("IndexCliente", "Home");
+                                return RedirectToAction("IndexCliente", "Home", new { idCliente = user.IdUtente });
                             }
                         }
                         else
