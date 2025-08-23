@@ -95,6 +95,44 @@ namespace Biblioteca.Data
             return libri;
         }
 
+        public List<Libro>? GetLibriNonPrenotati(int idCliente)
+        {
+            string query = $"SELECT l.* FROM Libri l WHERE NOT EXISTS( SELECT 1 FROM Prenotazioni p WHERE p.IdLibro = l.IdLibro AND p.IdUtente = {idCliente})" +
+                $"OR EXISTS( SELECT 1 FROM Prestiti pres INNER JOIN Prenotazioni pren ON pren.IdPrenotazione = pres.IdPrenotazione WHERE pren.IdLibro = l.IdLibro AND pren.IdUtente = {idCliente} AND pres.DataFine < GETDATE())";
+
+            var reader = _db.ExecuteReader(query);
+            var libri = new List<Libro>();
+
+            while (reader.Read())
+            {
+                var autore = GetAutori($"IdAutore = {reader.GetInt32(2)}", new SqlParameter[] { new SqlParameter("@IdAutore", reader.GetInt32(2)) }).FirstOrDefault();
+                var nazione = GetNazioni($"IdPaese = {reader.GetInt32(4)}", new SqlParameter[] { new SqlParameter("@IdPaese", reader.GetInt32(4)) }).FirstOrDefault();
+                var lingua = GetLingue($"IdLingua = {reader.GetInt32(5)}", new SqlParameter[] { new SqlParameter("@IdLingua", reader.GetInt32(5)) }).FirstOrDefault();
+
+                libri.Add(new Libro
+                {
+                    IdLibro = reader.GetInt32(0),
+                    Titolo = reader.GetString(1),
+                    IdAutore = reader.GetInt32(2),
+                    Autore = autore,
+                    Anno = reader.GetInt32(3),
+                    IdPaese = reader.GetInt32(4),
+                    Paese = nazione,
+                    IdLingua = reader.GetInt32(5),
+                    Lingua = lingua,
+                    Prezzo = reader.GetDecimal(6),
+                    Pagine = reader.GetInt32(7),
+                });
+            }
+
+            if (libri.Count == 0)
+            {
+                return null;
+            }
+
+            return libri;
+        }
+
         public List<Autore>? GetAutori(string strWhere, SqlParameter[]? parameters = null)
         {
             string query = "";
@@ -207,6 +245,32 @@ namespace Biblioteca.Data
                 return null;
             }
             return prenotazioni;
+        }
+
+        public List<Prestito>? GetPrestiti(string strWhere, SqlParameter[]? parameters = null)
+        {
+            string query = "";
+            if (strWhere == "")
+                query = $"SELECT * FROM Prestiti";
+            else
+                query = $"SELECT * FROM Prestiti WHERE {strWhere}";
+            var reader = _db.ExecuteReader(query, parameters);
+            var prestiti = new List<Prestito>();
+            while (reader.Read())
+            {
+                prestiti.Add(new Prestito
+                {
+                    IdPrestito = reader.GetInt32(0),
+                    IdPrenotazione = reader.GetInt32(1),
+                    DataInizio = reader.GetDateTime(2),
+                    DataFine = reader.GetDateTime(3),
+                });
+            }
+            if (prestiti.Count == 0)
+            {
+                return null;
+            }
+            return prestiti;
         }
 
         // NON FUNZIONA

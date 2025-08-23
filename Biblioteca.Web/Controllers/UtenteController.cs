@@ -30,6 +30,7 @@ namespace Biblioteca.Web.Controllers
             return View(utenti);
         }
 
+        [Authorize]
         public IActionResult Create()
         {
             ViewBag.Title = "Aggiungi Utente";
@@ -53,6 +54,7 @@ namespace Biblioteca.Web.Controllers
             return View(utente);
         }
 
+        [Authorize]
         public IActionResult Edit(int id)
         {
             ViewBag.Title = "Modifica Utente";

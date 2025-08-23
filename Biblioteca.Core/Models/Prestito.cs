@@ -10,13 +10,12 @@ namespace Biblioteca.Core.Models
     {
         public int IdPrestito { get; set; }
 
-        public int IdLibro { get; set; }
-        public Libro Libro { get; set; }
-
-        public int IdUtente { get; set; }
-        public Utente Utente { get; set; }
+        public int IdPrenotazione { get; set; }
+        public Prenotazione? Prenotazione { get; set; }
 
         public DateTime DataInizio { get; set; }
+
+        public DateTime DataFine { get; set; }
 
     }
 }

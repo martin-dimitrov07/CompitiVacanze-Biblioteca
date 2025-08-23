@@ -1,0 +1,27 @@
+.stato {
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-weight: bold;
+    text-align: center;
+    width: 150px;
+    margin: 10px;
+}
+
+.prenotato {
+    background-color: #fff3cd; /* Soft amber */
+    color: #856404; /* Warm amber text */
+    border: 2px solid #ffeeba; /* Subtle amber border */
+}
+
+.in-prestito {
+    background-color: #f8d7da; /* Soft rose */
+    color: #721c24; /* Deep rose text */
+    border: 2px solid #f5c6cb; /* Muted rose border */
+}
+
+.fine-prestito {
+    background-color: #d4edda; /* Soft mint green */
+    color: #155724; /* Rich green text */
+    border: 2px solid #c3e6cb; /* Subtle mint border */
+}
+

@@ -1,5 +1,9 @@
 ﻿@model List<Libro>
 
+@section Styles{
+    <link href="~/css/books.css" rel="stylesheet" />
+}
+
 @section Scripts {
     <script src="~/js/Delete-Book.js"></script>
 }
@@ -14,7 +18,14 @@
         else
         {
             <h1 class="mb-0">Libri Prenotati</h1>
-            <a class="btn btn-outline-dark" asp-controller="Libro" asp-action="Reserve">Prenota Libro</a>
+            if (ViewBag.Prenota)
+            {
+                <a class="btn btn-outline-dark" asp-controller="Libro" asp-action="Reserve" asp-route-idCliente="@ViewBag.IdCliente">Prenota Libro</a>
+            }
+            else
+            {
+                <a class="btn btn-outline-dark disabled" asp-controller="Libro" asp-action="Reserve" asp-route-idCliente="@ViewBag.IdCliente" aria-disabled="true" tabindex="-1" style="pointer-events: none; opacity: 0.5;">Prenota Libro</a>
+            }
         }
     </div>
 
@@ -35,7 +46,16 @@
                     <th>Lingua</th>
                     <th>Prezzo (€)</th>
                     <th>Pagine</th>
-                    <th>Azioni</th>
+                    @{
+                        if(ViewBag.Utente == "Admin")
+                        {
+                            <th>Azioni</th>
+                        }
+                        else
+                        {
+                            <th>Stato</th>
+                        }
+                    }
                 </tr>
             </thead>
             <tbody>
@@ -50,12 +70,59 @@
                         <td>@libro.Lingua.Nome</td>
                         <td>@libro.Prezzo.ToString("F2")</td>
                         <td>@libro.Pagine.ToString()</td>
-                        <td>
-                            <a class="mx-1 text-dark" asp-controller="Libro" asp-action="Edit" asp-route-id="@libro.IdLibro"><i class="bi bi-pencil-square"></i></a>
-                            <a class="mx-1 text-dark" id="btnDelete" data-bs-toggle="modal" data-bs-target="#deleteModal" data-id="@libro.IdLibro" style="cursor: pointer">
-                                <i class="bi bi-trash"></i>
-                            </a>
-                        </td>
+
+                        @{
+                            if (ViewBag.Utente == "Admin")
+                            {
+                                <td>
+                                    <a class="mx-1 text-dark" asp-controller="Libro" asp-action="Edit" asp-route-id="@libro.IdLibro"><i class="bi bi-pencil-square"></i></a>
+                                    <a class="mx-1 text-dark" id="btnDelete" data-bs-toggle="modal" data-bs-target="#deleteModal" data-id="@libro.IdLibro" style="cursor: pointer">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </td>
+                            }
+                            else if (ViewBag.Utente == "Cliente")
+                            {
+                                <td>
+                                    @{
+                                        if (ViewBag.Prestiti != null)
+                                        {
+                                            foreach (var prenotazione in ViewBag.Prenotazioni)
+                                            {
+                                                if (prenotazione.IdLibro == libro.IdLibro)
+                                                {
+                                                    foreach (var prestito in ViewBag.Prestiti)
+                                                    {
+                                                        if (prestito.IdPrenotazione == prenotazione.IdPrenotazione)
+                                                        {
+                                                            if (prestito.DataInizio > DateTime.Now)
+                                                            {
+                                                                <span class="stato prenotato">prenotato</span>
+                                                            }
+                                                            else
+                                                            {
+                                                                if (prestito.DataFine > DateTime.Now)
+                                                                {
+                                                                    <span class="stato in-prestito">in prestito</span>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <span class="stato fine-prestito">fine prestito</span>
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <span class="stato prenotato">prenotato</span>
+                                        }
+                                    }
+                                </td>
+                            }
+                        }
                     </tr>
                 }
             </tbody>

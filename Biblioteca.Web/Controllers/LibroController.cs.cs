@@ -1,5 +1,6 @@
 ﻿using Biblioteca.Core.Models;
 using Biblioteca.Data;
+using Biblioteca.Web.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -52,7 +53,7 @@ namespace Biblioteca.Web.Controllers
                 _repo.InsertElement("Libri", libro);
 
                 ViewBag.Utente = "Admin";
-                return RedirectToAction("Index");
+                return RedirectToAction("IndexAdmin");
             }
 
             ViewBag.Title = "Aggiungi Libro";
@@ -83,7 +84,7 @@ namespace Biblioteca.Web.Controllers
             {
                 _repo.UpdateElement("Libri", libro, $"IdLibro=@IdLibro", [new SqlParameter("@IdLibro", libro.IdLibro)]);
                 ViewBag.Utente = "Admin";
-                return RedirectToAction("Index");
+                return RedirectToAction("IndexAdmin");
             }
 
             ViewBag.Title = "Modifica Libro";
@@ -101,7 +102,7 @@ namespace Biblioteca.Web.Controllers
                 new SqlParameter("@IdLibro", id)
             });
             ViewBag.Utente = "Admin";
-            return RedirectToAction("Index");
+            return RedirectToAction("IndexAdmin");
         }
 
         [Authorize]
@@ -111,17 +112,56 @@ namespace Biblioteca.Web.Controllers
             ViewBag.Title = "Prenota Libro";
             ViewBag.Utente = "Cliente";
 
+            int countLibriInPrestito = 0;
+
             List<Libro>? libri = new List<Libro>();
 
             List<Prenotazione> prenotazioni = _repo.GetPrenotazioni($"IdUtente=@IdUtente", new SqlParameter[] { new SqlParameter("@IdUtente", idCliente) });
 
-            foreach(var prenotazione in prenotazioni)
+            List<Prestito> prestiti = new List<Prestito>();
+
+            foreach (var prenotazione in prenotazioni)
             {
+                prestiti.AddRange(_repo.GetPrestiti($"IdPrenotazione=@IdPrenotazione", new SqlParameter[] { new SqlParameter("@IdPrenotazione", prenotazione.IdPrenotazione) }));
+
                 libri.AddRange(_repo.GetLibri($"IdLibro=@IdLibro", new SqlParameter[] { new SqlParameter("@IdLibro", prenotazione.IdLibro) }));
             }
-            
+
+            foreach (var prestito in prestiti)
+            {
+                if (prestito.DataFine > DateTime.Now)
+                {
+                    countLibriInPrestito++;
+                }
+            }
+
+            if(countLibriInPrestito >= 3)
+            {
+                ViewBag.Prenota = false;
+            }
+            else
+            {
+                ViewBag.Prenota = true;
+            }
+
             ViewBag.IdCliente = idCliente;
+            ViewBag.Prenotazioni = prenotazioni;
+            ViewBag.Prestiti = prestiti;
             return View("Index", libri);
         }
+
+        [Authorize]
+        public IActionResult Reserve(int idCliente)
+        {
+            ViewBag.Title = "Prenota Libro";
+            ViewBag.Utente = "Cliente";
+            ViewBag.IdCliente = idCliente;
+
+            ViewBag.Libri = new SelectList(_repo.GetLibriNonPrenotati(idCliente), "IdLibro", "Titolo");
+
+            return View("Reserve");
+        }
+
+        
     }
 }

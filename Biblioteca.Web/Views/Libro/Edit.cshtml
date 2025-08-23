@@ -3,7 +3,7 @@
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h1 class="mb-0">@ViewBag.Title</h1>
-        <a class="btn btn-outline-dark" asp-controller="Libro" asp-action="Index">Torna ai Libri</a>
+        <a class="btn btn-outline-dark" asp-controller="Libro" asp-action="IndexAdmin">Torna ai Libri</a>
     </div>
 
     <form asp-action="Edit" asp-controller="Libro" method="post" class="border rounded my-3 p-4 shadow-sm bg-light">
@@ -26,13 +26,13 @@
         </div>
 
         <div class="mb-3">
-            <label asp-for="IdPaese" class="form-label"></label>
+            <label asp-for="IdPaese" class="form-label">Paese</label>
             <select asp-for="IdPaese" asp-items="ViewBag.Paesi" class="form-select"></select>
             <span asp-validation-for="IdPaese" class="text-danger"></span>
         </div>
 
         <div class="mb-3">
-            <label asp-for="IdLingua" class="form-label"></label>
+            <label asp-for="IdLingua" class="form-label">Lingua</label>
             <select asp-for="IdLingua" asp-items="ViewBag.Lingue" class="form-select"></select>
             <span asp-validation-for="IdLingua" class="text-danger"></span>
         </div>
@@ -52,7 +52,7 @@
         <input type="hidden" asp-for="IdLibro"/>
 
         <button type="submit" class="btn btn-dark">Salva</button>
-        <a class="btn btn-outline-secondary ms-2" asp-controller="Libro" asp-action="Index">Annulla</a>
+        <a class="btn btn-outline-secondary ms-2" asp-controller="Libro" asp-action="IndexAdmin">Annulla</a>
     </form>
 </div>
 
