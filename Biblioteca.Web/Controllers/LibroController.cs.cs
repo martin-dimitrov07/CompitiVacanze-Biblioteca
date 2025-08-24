@@ -109,7 +109,7 @@ namespace Biblioteca.Web.Controllers
         [HttpGet]
         public IActionResult IndexCliente(int idCliente)
         {
-            ViewBag.Title = "Prenota Libro";
+            ViewBag.Title = "Libri Prenotati";
             ViewBag.Utente = "Cliente";
 
             int countLibriInPrestito = 0;
@@ -161,7 +161,29 @@ namespace Biblioteca.Web.Controllers
 
             return View("Reserve");
         }
-
         
+        public IActionResult GetDateBloccate(int idLibro, int idCliente)
+        {
+            var dateBloccate = new List<object>();
+
+            List<Prenotazione> prenotazioni = _repo.GetPrenotazioni($"IdUtente=@IdUtente", new SqlParameter[] { new SqlParameter("@IdUtente", idCliente) });
+
+            List<Prestito> prestiti = new List<Prestito>();
+
+            foreach (var prenotazione in prenotazioni)
+            {
+                prestiti.AddRange(_repo.GetPrestiti($"IdPrenotazione=@IdPrenotazione", new SqlParameter[] { new SqlParameter("@IdPrenotazione", prenotazione.IdPrenotazione) }));
+            }
+
+            if(prestiti.Count > 0)
+            {
+                foreach (var prestito in prestiti)
+                {
+                    dateBloccate.Add(new { DataInizio = prestito.DataInizio.ToString("yyyy-MM-dd"), DataFine = prestito.DataFine.ToString("yyyy-MM-dd") });
+                }
+            }
+
+            return Json(dateBloccate);
+        }
     }
 }
