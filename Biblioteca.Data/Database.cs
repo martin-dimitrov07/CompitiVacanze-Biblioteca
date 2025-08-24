@@ -48,5 +48,23 @@ namespace Biblioteca.Data
                 }
             }
         }
+
+        // Serve per restituire l'id autoincrementale generato dopo la insert per la tabella delle prenotazioni
+        public object ExecuteScalar(string query, SqlParameter[]? parameters = null)
+        {
+            using (var connection = GetConnection())
+            {
+                using (var command = new SqlCommand(query, connection))
+                {
+                    if (parameters != null)
+                    {
+                        command.Parameters.AddRange(parameters);
+                    }
+                    connection.Open();
+                    return command.ExecuteScalar();
+                }
+            }
+        }
+
     }
 }

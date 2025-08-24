@@ -20,7 +20,7 @@ namespace Biblioteca.Web.ViewModels
         public DateTime DataInizioPrestito { get; set; }
 
         [Required(ErrorMessage = "Inserire la data di fine del prestito")]
-        public DateTime? DataFinePrestito { get; set; }
+        public DateTime DataFinePrestito { get; set; }
     }
 
 }

@@ -26,7 +26,7 @@ namespace Biblioteca.Web.Controllers
         {
             ViewBag.Title = "Libri";
             ViewBag.Utente = "Admin";
-            
+
             List<Libro>? libri = _repo.GetLibri("");
 
             return View("Index", libri);
@@ -135,7 +135,7 @@ namespace Biblioteca.Web.Controllers
                 }
             }
 
-            if(countLibriInPrestito >= 3)
+            if (countLibriInPrestito >= 3)
             {
                 ViewBag.Prenota = false;
             }
@@ -161,29 +161,56 @@ namespace Biblioteca.Web.Controllers
 
             return View("Reserve");
         }
-        
+
         public IActionResult GetDateBloccate(int idLibro, int idCliente)
         {
             var dateBloccate = new List<object>();
 
-            List<Prenotazione> prenotazioni = _repo.GetPrenotazioni($"IdUtente=@IdUtente", new SqlParameter[] { new SqlParameter("@IdUtente", idCliente) });
+            List<Prenotazione> prenotazioni = _repo.GetPrenotazioni($"IdUtente=@IdUtente AND IdLibro=@IdLibro", new SqlParameter[] { new SqlParameter("@IdUtente", idCliente), new SqlParameter("@IdLibro", idLibro) });
 
-            List<Prestito> prestiti = new List<Prestito>();
-
-            foreach (var prenotazione in prenotazioni)
+            if (prenotazioni != null && prenotazioni.Count > 0)
             {
-                prestiti.AddRange(_repo.GetPrestiti($"IdPrenotazione=@IdPrenotazione", new SqlParameter[] { new SqlParameter("@IdPrenotazione", prenotazione.IdPrenotazione) }));
-            }
+                List<Prestito> prestiti = new List<Prestito>();
 
-            if(prestiti.Count > 0)
-            {
-                foreach (var prestito in prestiti)
+                foreach (var prenotazione in prenotazioni)
                 {
-                    dateBloccate.Add(new { DataInizio = prestito.DataInizio.ToString("yyyy-MM-dd"), DataFine = prestito.DataFine.ToString("yyyy-MM-dd") });
+                    prestiti.AddRange(_repo.GetPrestiti($"IdPrenotazione=@IdPrenotazione", new SqlParameter[] { new SqlParameter("@IdPrenotazione", prenotazione.IdPrenotazione) }));
+                }
+
+                if (prestiti.Count > 0)
+                {
+                    foreach (var prestito in prestiti)
+                    {
+                        dateBloccate.Add(new { DataInizio = prestito.DataInizio.ToString("yyyy-MM-dd"), DataFine = prestito.DataFine.ToString("yyyy-MM-dd") });
+                    }
                 }
             }
 
             return Json(dateBloccate);
+        }
+
+        [HttpPost]
+        public IActionResult Reserve(int idCliente, PrenotazionePrestito model)
+        {
+            Prenotazione prenotazione = new Prenotazione
+            {
+                IdLibro = model.IdLibro,
+                IdUtente = idCliente
+            };
+
+            int idPrenotazione = _repo.InsertElement("Prenotazioni", prenotazione);
+
+            Prestito prestito = new Prestito
+            {
+                IdPrenotazione = idPrenotazione,
+                DataInizio = model.DataInizioPrestito,
+                DataFine = model.DataFinePrestito
+            };
+
+            _repo.InsertElement("Prestiti", prestito);
+
+            ViewBag.Utente = "Cliente";
+            return RedirectToAction("IndexCliente", new { idCliente = idCliente });
         }
     }
 }

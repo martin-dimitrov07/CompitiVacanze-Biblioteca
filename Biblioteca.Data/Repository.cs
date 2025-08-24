@@ -331,9 +331,18 @@ namespace Biblioteca.Data
                 }
             }
 
-            string query = $"INSERT INTO {nameTable} ({string.Join(", ", fields)}) VALUES ({string.Join(", ", paramNames)})";
+            string query = "";
 
-            return _db.ExecuteNonQuery(query, sqlParams.ToArray());
+            if(nameTable == "Prenotazioni")
+            {
+                query = $"INSERT INTO {nameTable} ({string.Join(", ", fields)}) OUTPUT INSERTED.IdPrenotazione VALUES ({string.Join(", ", paramNames)})";
+                return Convert.ToInt32(_db.ExecuteScalar(query, sqlParams.ToArray()));
+            }
+            else
+            {
+                query = $"INSERT INTO {nameTable} ({string.Join(", ", fields)}) VALUES ({string.Join(", ", paramNames)})";
+                return _db.ExecuteNonQuery(query, sqlParams.ToArray());
+            }
         }
 
 

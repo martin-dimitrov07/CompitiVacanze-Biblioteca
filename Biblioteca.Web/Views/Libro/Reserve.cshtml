@@ -24,21 +24,29 @@
         </div>
 
         <div class="mb-3">
-            <label asp-for="DataInizioPrestito" class="form-label">Data d'inizio prestito</label>
-            <input type="date" id="dataInizio" asp-for="DataInizioPrestito" class="form-control" placeholder="Inserisci la data d'inizio prestito"/>
+            <label class="form-label">Data d'inizio prestito</label>
+            <!-- input text mostrato all'utente -->
+            <input type="date" id="dataInizio" class="form-control" placeholder="Inserire la data d'inizio del prestito" />
+
+            <!-- input hidden legato al model -->
+            <input type="hidden" asp-for="DataInizioPrestito" id="dataInizioHidden" />
             <span asp-validation-for="DataInizioPrestito" class="text-danger"></span>
         </div>
 
         <div class="mb-3">
             <label asp-for="DataFinePrestito" class="form-label">Data di fine prestito</label>
-            <input type="date" id="dataFine" asp-for="DataFinePrestito" class="form-control" placeholder="Inserisci la data di fine prestito" disabled/>
+            <!-- input text mostrato all'utente -->
+            <input type="date" id="dataFine" class="form-control" placeholder="Inserire la data di fine del prestito" disabled/>
+
+            <!-- input hidden legato al model -->
+            <input type="hidden" asp-for="DataFinePrestito" id="dataFineHidden" />
             <span asp-validation-for="DataFinePrestito" class="text-danger"></span>
         </div>
 
-        <input type="hidden" id="idCliente" value="@ViewBag.IdCLiente" />
+        <input type="hidden" name="idCliente" id="idCliente" value="@ViewBag.IdCLiente" />
 
         <button type="submit" class="btn btn-dark">Salva</button>
-        <a class="btn btn-outline-secondary ms-2" asp-controller="Libro" asp-action="IndexCliente">Annulla</a>
+        <a class="btn btn-outline-secondary ms-2" asp-controller="Libro" asp-action="IndexCliente" asp-route-idCliente="@ViewBag.IdCliente">Annulla</a>
     </form>
 </div>
 
