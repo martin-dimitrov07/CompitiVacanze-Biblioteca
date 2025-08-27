@@ -24,7 +24,7 @@
             }
             else
             {
-                <a class="btn btn-outline-dark disabled" asp-controller="Libro" asp-action="Reserve" asp-route-idCliente="@ViewBag.IdCliente" aria-disabled="true" tabindex="-1" style="pointer-events: none; opacity: 0.5;">Prenota Libro</a>
+                <a class="btn btn-outline-dark disabled" aria-disabled="true" tabindex="-1" style="pointer-events: none; opacity: 0.5;">Prenota Libro</a>
             }
         }
     </div>
@@ -38,98 +38,113 @@
         <table class="table table-striped table-bordered table-hover">
             <thead class="table-dark">
                 <tr>
-                    <th>Id</th>
-                    <th>Titolo</th>
-                    <th>Autore</th>
-                    <th>Anno</th>
-                    <th>Paese</th>
-                    <th>Lingua</th>
-                    <th>Prezzo (€)</th>
-                    <th>Pagine</th>
                     @{
                         if(ViewBag.Utente == "Admin")
                         {
+                            <th>Id</th>
+                            <th>Titolo</th>
+                            <th>Autore</th>
+                            <th>Anno</th>
+                            <th>Paese</th>
+                            <th>Lingua</th>
+                            <th>Prezzo (€)</th>
+                            <th>Pagine</th>
                             <th>Azioni</th>
                         }
                         else
                         {
+                            <th>Id Prenotazione</th>
+                            <th>Titolo Libro</th>
+                            <th>Data Inizio Prestito</th>
+                            <th>Data Fine Prestito</th>
                             <th>Stato</th>
                         }
                     }
                 </tr>
             </thead>
-            <tbody>
-                @* CAMBIARE ORDINE FOREACH (ELENCO LIBRI PRENOTATI IN BASE ALLE PRENOTAZIONI -> FOREACH PIU' ESTERNO) *@
-                @foreach (var libro in Model)
-                {
-                    <tr>
-                        <td>@libro.IdLibro.ToString()</td>
-                        <td>@libro.Titolo</td>
-                        <td>@libro.Autore.Cognome @libro.Autore.Nome</td>
-                        <td>@libro.Anno.ToString()</td>
-                        <td>@libro.Paese.Nome</td>
-                        <td>@libro.Lingua.Nome</td>
-                        <td>@libro.Prezzo.ToString("F2")</td>
-                        <td>@libro.Pagine.ToString()</td>
-
-                        @{
-                            if (ViewBag.Utente == "Admin")
-                            {
+            <tbody>                
+                @{
+                    if(ViewBag.Utente == "Admin")
+                    {
+                        foreach(var libro in Model)
+                        {
+                            <tr>
+                                <td>@libro.IdLibro.ToString()</td>
+                                <td>@libro.Titolo</td>
+                                <td>@libro.Autore.Cognome @libro.Autore.Nome</td>
+                                <td>@libro.Anno.ToString()</td>
+                                <td>@libro.Paese.Nome</td>
+                                <td>@libro.Lingua.Nome</td>
+                                <td>@libro.Prezzo.ToString("F2")</td>
+                                <td>@libro.Pagine.ToString()</td>
                                 <td>
                                     <a class="mx-1 text-dark" asp-controller="Libro" asp-action="Edit" asp-route-id="@libro.IdLibro"><i class="bi bi-pencil-square"></i></a>
                                     <a class="mx-1 text-dark" id="btnDelete" data-bs-toggle="modal" data-bs-target="#deleteModal" data-id="@libro.IdLibro" style="cursor: pointer">
                                         <i class="bi bi-trash"></i>
                                     </a>
                                 </td>
-                            }
-                            else if (ViewBag.Utente == "Cliente")
-                            {
-                                <td>
-                                    @{
-                                        if (ViewBag.Prestiti != null)
-                                        {
-                                            foreach (var prenotazione in ViewBag.Prenotazioni)
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        foreach(var prenotazione in ViewBag.Prenotazioni)
+                        {
+                            <tr>
+                                <td>@prenotazione.IdPrenotazione</td>
+
+                                @foreach(var libro in Model)
+                                {
+                                    if(libro.IdLibro == prenotazione.IdLibro)
+                                    {
+                                        <td>@libro.Titolo</td>
+
+                                        break;
+                                    }
+                                }
+
+                                @foreach(var prestito in ViewBag.Prestiti)
+                                {
+                                    if(prestito.IdPrenotazione == prenotazione.IdPrenotazione)
+                                    {
+                                        <td>@prestito.DataInizio.ToString("dd/MM/yyyy")</td>
+                                        <td>@prestito.DataFine.ToString("dd/MM/yyyy")</td>
+
+                                        <td>
+
+                                            @if (prestito.DataInizio.Date > DateTime.Now.Date)
                                             {
-                                                if (prenotazione.IdLibro == libro.IdLibro)
+                                                <span class="stato prenotato">prenotato</span>
+                                            }
+                                            else
+                                            {
+                                                if (prestito.DataFine.Date >= DateTime.Now.Date)
                                                 {
-                                                    foreach (var prestito in ViewBag.Prestiti)
-                                                    {
-                                                        if (prestito.IdPrenotazione == prenotazione.IdPrenotazione)
-                                                        {
-                                                            if (prestito.DataInizio > DateTime.Now)
-                                                            {
-                                                                <span class="stato prenotato">prenotato</span>
-                                                            }
-                                                            else
-                                                            {
-                                                                if (prestito.DataFine > DateTime.Now)
-                                                                {
-                                                                    <span class="stato in-prestito">in prestito</span>
-                                                                }
-                                                                else
-                                                                {
-                                                                    <span class="stato fine-prestito">fine prestito</span>
-                                                                }
-                                                            }
-
-                                                            break;
-                                                        }
-                                                    }
-
-                                                    break;
+                                                    <span class="stato in-prestito">in prestito</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="stato fine-prestito">fine prestito</span>
                                                 }
                                             }
-                                        }
-                                        else
-                                        {
-                                            <span class="stato prenotato">prenotato</span>
-                                        }
+
+                                        </td>
+
+                                        break;
                                     }
-                                </td>
-                            }
+                                }
+                            </tr>
                         }
-                    </tr>
+                    }
                 }
+
+                @{
+                    if(!ViewBag.Prenota)
+                    {
+                        <div class="alert alert-warning">Si è arrivati al limite di libri prenotati e in prestito contemporaneamente (max: 3 libri)</div>
+                    }
+                }
+
             </tbody>
         </table>
     }

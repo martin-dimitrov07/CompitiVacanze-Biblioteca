@@ -1,4 +1,4 @@
-﻿window.onload = function () {
+window.onload = function () {
     const libri = document.getElementById("libri");
     const idCliente = document.getElementById("idCliente").value;
     const dataInizio = document.getElementById("dataInizio");
@@ -15,10 +15,9 @@
             document.querySelector("#dataInizioHidden").value = dateStr; // aggiorna hidden
         }
     });
-    setDateBloccate(libri.value, idCliente);
 
     libri.addEventListener("change", function () {
-        setDateBloccate(this.value, idCliente);
+        setDateBloccate(this.value, idCliente, flatDataInizio, flatDataFine);
     });
 
     const flatDataFine = flatpickr("#dataFine", {
@@ -39,9 +38,12 @@
         flatDataFine.open();
         flatDataFine.altInput.disabled = false;
     });
+
+    setDateBloccate(libri.value, idCliente, flatDataInizio, flatDataFine);
+
 }
 
-function setDateBloccate(idLibro, idCliente)
+function setDateBloccate(idLibro, idCliente, _flatDataInizio, _flatDataFine)
 {
     fetch(`/Libro/GetDateBloccate?idLibro=${idLibro}&idCliente=${idCliente}`)
         .then(response => {
@@ -59,16 +61,17 @@ function setDateBloccate(idLibro, idCliente)
             {
                 const arrayDateBloccateFlat = [];
 
-                for (const data of dateBloccate) {
+                for (const data of dateBloccate)
+                {
                     arrayDateBloccateFlat.push({
                         from: data.dataInizio,
                         to: data.dataFine
                     });
                 }
 
-                flatDataInizio.set("disable", arrayDateBloccateFlat);
-                flatDataFine.set("disable", arrayDateBloccateFlat);
-            })
+                _flatDataInizio.set("disable", arrayDateBloccateFlat);
+                _flatDataFine.set("disable", arrayDateBloccateFlat);
+            }
         })
         .catch(error => {
             console.error("Errore fetch:", error);

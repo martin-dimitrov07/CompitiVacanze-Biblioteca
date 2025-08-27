@@ -129,7 +129,7 @@ namespace Biblioteca.Web.Controllers
 
             foreach (var prestito in prestiti)
             {
-                if (prestito.DataFine > DateTime.Now)
+                if (prestito.DataFine.Date >= DateTime.Now.Date)
                 {
                     countLibriInPrestito++;
                 }
