@@ -4,10 +4,6 @@
     <link href="~/css/books.css" rel="stylesheet" />
 }
 
-@section Scripts {
-    <script src="~/js/Delete-Book.js"></script>
-}
-
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-3">
         @if(ViewBag.Utente == "Admin")
@@ -169,3 +165,62 @@
         </div>
     </div>
 </div>
+
+@{
+    List<Libro> libri = new List<Libro>();
+
+    if(ViewBag.Utente == "Cliente")
+    {
+        foreach(var prestito in ViewBag.Prestiti)
+        {
+            if (prestito.DataFine.Date == DateTime.Now.Date)
+            {
+                foreach (var prenotazione in ViewBag.Prenotazioni)
+                {
+                    if (prestito.IdPrenotazione == prenotazione.IdPrenotazione)
+                    {
+                        foreach (var libro in Model)
+                        {
+                            if (libro.IdLibro == prenotazione.IdLibro)
+                            {
+                                libri.Add(libro);
+                                break;
+                            }
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+
+        if(libri.Count > 0)
+        {
+            <div class="toast-container position-fixed bottom-0 end-0 p-3">
+                <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="false">
+                    <div class="toast-header">
+                        <strong class="me-auto" style="color: #ffc10788">
+                            AVVISO IMPORTANTE!
+                            <i class="bi bi-exclamation-triangle"></i>
+                        </strong>
+                        <button type="button" class="btn-close m-0" data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>
+                    <div class="toast-body d-flex align-items-center justify-content-between" style="color: #ffc107BB">
+                        <p class="m-0">Scarica per maggiori informazioni.</p>
+                        <button type="button" class="btn btn-outline-warning btn-sm">Scarica</button>
+                    </div>
+                </div>
+            </div>
+
+            @section Scripts {
+                <script src="~/js/Toast-Warning.js"></script>
+                <script src="~/js/Delete-Book.js"></script>
+            }
+        }
+    }
+    else
+    {
+        @section Scripts {
+            <script src="~/js/Delete-Book.js"></script>
+        }
+    }
+}
