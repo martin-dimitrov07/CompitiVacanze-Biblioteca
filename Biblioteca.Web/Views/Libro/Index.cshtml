@@ -139,7 +139,7 @@
                 }
 
                 @{
-                    if(!ViewBag.Prenota)
+                    if(ViewBag.Utente == "Cliente" && !ViewBag.Prenota)
                     {
                         <div class="alert alert-warning">Si è arrivati al limite di libri prenotati e in prestito contemporaneamente (max: 3 libri)</div>
                     }

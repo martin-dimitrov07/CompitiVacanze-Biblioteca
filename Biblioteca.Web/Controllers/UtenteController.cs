@@ -92,6 +92,21 @@ namespace Biblioteca.Web.Controllers
         [HttpPost]
         public IActionResult Delete(int id)
         {
+            List<Prenotazione> prenotazioni = _repo.GetPrenotazioni($"IdUtente=@IdUtente", new SqlParameter[] { new SqlParameter("@IdUtente", id) });
+
+            foreach (var prenotazione in prenotazioni)
+            {
+                _repo.DeleteElement("Prestiti", "IdPrenotazione=@IdPrenotazione", new SqlParameter[]
+                {
+                    new SqlParameter("@IdPrenotazione", prenotazione.IdPrenotazione)
+                });
+            }
+
+            _repo.DeleteElement("Prenotazioni", "IdUtente=@IdUtente", new SqlParameter[]
+            {
+                new SqlParameter("@IdUtente", id)
+            });
+
             _repo.DeleteElement("Utenti", $"IdUtente=@IdUtente", new SqlParameter[] {
                 new SqlParameter("@IdUtente", id)
             });
