@@ -18,6 +18,7 @@ namespace Biblioteca.Core.Models
 
         [Required(ErrorMessage = "Inserire l'autore")]
         public int IdAutore { get; set; }
+
         public Autore? Autore { get; set; }
 
         [Required(ErrorMessage = "Inserire l'anno")]
@@ -25,13 +26,17 @@ namespace Biblioteca.Core.Models
 
         [Required(ErrorMessage = "Inserire il paese")]
         public int IdPaese { get; set; }
+
         public Nazione? Paese { get; set; }
 
         [Required(ErrorMessage = "Inserire la lingua")]
+
         public int IdLingua { get; set; }
         public Lingua? Lingua { get; set; }
 
+
         [Required(ErrorMessage = "Inserire il prezzo")]
+
         public decimal Prezzo { get; set; }
 
         [Required(ErrorMessage = "Inserire il numero di pagine")]

@@ -5,11 +5,11 @@ using Biblioteca.Core.Models;
 using Xceed.Document.NET;
 using Xceed.Words.NET;
 
-namespace AttivaMente.Services
+namespace Biblioteca.Services
 {
-    public class WordReminderService
+    public class WordDocumentService
     {
-        public byte[] GenerateReminderLetter(List<Libro> libri, Autore autore, Nazione paese, Lingua lingua, Utente utente)
+        public byte[] GenerateReminderLetter(List<Libro> libri, List<Autore> autori, List<Nazione> paesi, List<Lingua> lingue, Utente utente)
         {
             using (var memoryStream = new MemoryStream())
             {
@@ -57,6 +57,9 @@ namespace AttivaMente.Services
                         for (int i = 0; i < libri.Count; i++)
                         {
                             var libro = libri[i];
+                            var autore = autori[i];
+                            var paese = paesi[i];
+                            var lingua = lingue[i];
                             libriTable.Rows[i + 1].Cells[0].Paragraphs[0].Append(libro.Titolo);
                             libriTable.Rows[i + 1].Cells[1].Paragraphs[0].Append(autore.Nome);
                             libriTable.Rows[i + 1].Cells[2].Paragraphs[0].Append(libro.Anno.ToString());

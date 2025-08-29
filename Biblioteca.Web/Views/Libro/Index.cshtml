@@ -206,7 +206,7 @@
                     </div>
                     <div class="toast-body d-flex align-items-center justify-content-between" style="color: #ffc107BB">
                         <p class="m-0">Scarica per maggiori informazioni.</p>
-                        <button type="button" class="btn btn-outline-warning btn-sm">Scarica</button>
+                        <a class="btn btn-outline-warning btn-sm" asp-action="DownloadWord" asp-controller="DocX" asp-route-idCliente="@ViewBag.IdCliente">Scarica</a>
                     </div>
                 </div>
             </div>

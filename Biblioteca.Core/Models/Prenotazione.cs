@@ -13,10 +13,6 @@ namespace Biblioteca.Core.Models
         public int IdPrenotazione { get; set; }
 
         public int IdLibro { get; set; }
-        public Libro Libro { get; set; }
-
         public int IdUtente { get; set; }
-        public Utente Utente { get; set; }
-
     }
 }
