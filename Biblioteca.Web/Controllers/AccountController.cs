@@ -56,7 +56,7 @@ namespace Biblioteca.Web.Controllers
 
                             await HttpContext.SignInAsync("MyCookieAuth", principal); // crea il cookie
 
-                            if(user.Email == "admin@admin.com" && BCrypt.Net.BCrypt.Verify("Admin", user.PasswordHash))
+                            if(user.Email == "admin@admin.com" && BCrypt.Net.BCrypt.Verify("admin", user.PasswordHash))
                             {
                                 Console.WriteLine("Accesso come Admin.");
                                 return RedirectToAction("IndexAdmin", "Home");
